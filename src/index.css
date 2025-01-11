@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Position the hr element for the transition */
+a.active hr {
+    position: relative;
+    display: block;
+    width: 0%; /* Initially hidden */
+    transition: width 0.5s ease; /* Smooth transition for width */
+  }
+  
+  /* Create the underline effect */
+  a.active hr::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Full width of the hr */
+    height: 2px;
+    background-color: #000;
+    transition: all 0.5s ease; /* Transition for all properties */
+    transform: scaleX(0); /* Start with no visible line */
+    transform-origin: bottom right; /* Start from the right */
+  }
+  
+  /* On hover, expand the line */
+ 
+  
+  a.active:hover hr {
+    width: 100%; /* The hr element expands to full width */
+  }
+  
+  
