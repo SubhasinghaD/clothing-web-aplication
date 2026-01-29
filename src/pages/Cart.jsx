@@ -84,7 +84,7 @@ const Cart = () => {
   if (cartData.length === 0) {
     return (
       <div className="text-center py-10">
-        <p>Your cart is empty. Start shopping!</p>
+        <p>Your cart is empty. Start shopping now!</p>
         <button
           onClick={() => navigate('/collection')}
           className="mt-4 bg-black text-white px-4 py-2"
