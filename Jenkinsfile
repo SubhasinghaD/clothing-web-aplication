@@ -5,6 +5,10 @@ pipeline {
         IMAGE_NAME = "username/your-react-app:latest"
     }
 
+    tools {
+        nodejs "NodeJS_18" // Name of your NodeJS installation in Global Tool Configuration
+    }
+
     stages {
 
         stage('Checkout SCM') {
