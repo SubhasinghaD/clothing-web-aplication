@@ -1,10 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "username/your-react-app:latest"
+    }
+
     stages {
-        stage('Clone Repo') {
+
+        stage('Checkout SCM') {
             steps {
-                git 'https://github.com/username/repo.git'
+                checkout scm
             }
         }
 
@@ -22,15 +27,23 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t username/your-react-app:latest .'
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
-                    sh 'docker push username/your-react-app:latest'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME
+                    '''
                 }
             }
         }
@@ -38,10 +51,10 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sh '''
-                docker pull username/your-react-app:latest
-                docker stop react-app || true
-                docker rm react-app || true
-                docker run -d -p 80:80 --name react-app username/your-react-app:latest
+                    docker pull $IMAGE_NAME
+                    docker stop react-app || true
+                    docker rm react-app || true
+                    docker run -d -p 80:80 --name react-app $IMAGE_NAME
                 '''
             }
         }
