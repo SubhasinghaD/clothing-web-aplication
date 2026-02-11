@@ -2,24 +2,37 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "username/your-react-app:latest"
+        DOCKER_REPO = "subhasingha01/devops-engineering"
+        FRONTEND_IMAGE = "${DOCKER_REPO}:frontend-v1"
+        BACKEND_IMAGE  = "${DOCKER_REPO}:backend-v1"
     }
 
     stages {
 
-        stage('Checkout SCM') {
+        stage('Checkout Code') {
             steps {
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/SubhasinghaD/clothing-web-aplication.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Frontend Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh '''
+                    docker build -t $FRONTEND_IMAGE ./frontend
+                '''
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Build Backend Image') {
+            steps {
+                sh '''
+                    docker build -t $BACKEND_IMAGE ./backend
+                '''
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -30,7 +43,8 @@ pipeline {
                 ]) {
                     sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $IMAGE_NAME
+                        docker push $FRONTEND_IMAGE
+                        docker push $BACKEND_IMAGE
                     '''
                 }
             }
@@ -39,10 +53,26 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sh '''
-                    docker pull $IMAGE_NAME
-                    docker stop react-app || true
-                    docker rm react-app || true
-                    docker run -d -p 80:80 --name react-app $IMAGE_NAME
+                    docker pull $FRONTEND_IMAGE
+                    docker pull $BACKEND_IMAGE
+
+                    # Stop old containers
+                    docker stop frontend || true
+                    docker rm frontend || true
+                    docker stop backend || true
+                    docker rm backend || true
+
+                    # Run Backend
+                    docker run -d \
+                      --name backend \
+                      -p 4003:4003 \
+                      $BACKEND_IMAGE
+
+                    # Run Frontend
+                    docker run -d \
+                      --name frontend \
+                      -p 80:80 \
+                      $FRONTEND_IMAGE
                 '''
             }
         }
