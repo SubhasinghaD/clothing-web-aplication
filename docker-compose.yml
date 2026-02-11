@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "4001:4001"
+    networks:
+      - app-network
+
+  admin:
+    build: ./admin
+    container_name: admin
+    ports:
+      - "4003:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    environment:
+      - VITE_BACKEND_URL=http://backend:4001
+
+  user:
+    build: .
+    container_name: user
+    ports:
+      - "4004:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    environment:
+      - VITE_BACKEND_URL=http://backend:4001
+
+networks:
+  app-network:
+    driver: bridge
