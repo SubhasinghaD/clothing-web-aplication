@@ -16,26 +16,19 @@ pipeline {
             }
         }
 
-        // ---------------- FRONTEND ----------------
         stage('Build Frontend Image') {
             steps {
-                sh '''
-                    docker build -t $FRONTEND_IMAGE .
-                '''
+                sh 'docker build -t $FRONTEND_IMAGE .'
             }
         }
 
-        // ---------------- BACKEND ----------------
         stage('Build Backend Image') {
             steps {
-                sh '''
-                    docker build -t $BACKEND_IMAGE ./backend
-                '''
+                sh 'docker build -t $BACKEND_IMAGE ./backend'
             }
         }
 
-        // ---------------- PUSH ----------------
-        stage('Push Images to DockerHub') {
+        stage('Login & Push to DockerHub') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -53,22 +46,29 @@ pipeline {
             }
         }
 
-        // ---------------- DEPLOY ----------------
-        stage('Deploy Containers') {
+        stage('Deploy Containers on EC2') {
             steps {
                 sh '''
-                    docker pull $FRONTEND_IMAGE
-                    docker pull $BACKEND_IMAGE
+                    echo "Stopping old containers..."
 
                     docker stop frontend || true
                     docker rm frontend || true
                     docker stop backend || true
                     docker rm backend || true
 
+                    echo "Pulling latest images..."
+
+                    docker pull $FRONTEND_IMAGE
+                    docker pull $BACKEND_IMAGE
+
+                    echo "Starting backend..."
+
                     docker run -d \
                         --name backend \
                         -p 4003:4003 \
                         $BACKEND_IMAGE
+
+                    echo "Starting frontend..."
 
                     docker run -d \
                         --name frontend \
@@ -76,6 +76,15 @@ pipeline {
                         $FRONTEND_IMAGE
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment Successful!"
+        }
+        failure {
+            echo "❌ Deployment Failed!"
         }
     }
 }
