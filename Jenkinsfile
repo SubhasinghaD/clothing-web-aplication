@@ -16,14 +16,16 @@ pipeline {
             }
         }
 
+        // ---------------- FRONTEND ----------------
         stage('Build Frontend Image') {
             steps {
                 sh '''
-                    docker build -t $FRONTEND_IMAGE ./frontend
+                    docker build -t $FRONTEND_IMAGE .
                 '''
             }
         }
 
+        // ---------------- BACKEND ----------------
         stage('Build Backend Image') {
             steps {
                 sh '''
@@ -32,7 +34,8 @@ pipeline {
             }
         }
 
-        stage('Push Images to Docker Hub') {
+        // ---------------- PUSH ----------------
+        stage('Push Images to DockerHub') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -50,29 +53,27 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+        // ---------------- DEPLOY ----------------
+        stage('Deploy Containers') {
             steps {
                 sh '''
                     docker pull $FRONTEND_IMAGE
                     docker pull $BACKEND_IMAGE
 
-                    # Stop old containers
                     docker stop frontend || true
                     docker rm frontend || true
                     docker stop backend || true
                     docker rm backend || true
 
-                    # Run Backend
                     docker run -d \
-                      --name backend \
-                      -p 4003:4003 \
-                      $BACKEND_IMAGE
+                        --name backend \
+                        -p 4003:4003 \
+                        $BACKEND_IMAGE
 
-                    # Run Frontend
                     docker run -d \
-                      --name frontend \
-                      -p 80:80 \
-                      $FRONTEND_IMAGE
+                        --name frontend \
+                        -p 80:80 \
+                        $FRONTEND_IMAGE
                 '''
             }
         }
