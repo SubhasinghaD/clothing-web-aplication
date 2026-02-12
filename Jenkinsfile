@@ -66,7 +66,8 @@ pipeline {
                     docker run -d \
                         --name backend \
                         -p 4003:4003 \
-                        -e MONGO_URI="mongodb+srv://username:password@cluster.mongodb.net/dbname" \
+                        -e MONGO_URI="mongodb+srv://atlasAdmin:200615Dilanka@cluster0.ajdto.mongodb.net/clothing?retryWrites=true&w=majority
+" \
                         $BACKEND_IMAGE
 
                     echo "Starting frontend..."
