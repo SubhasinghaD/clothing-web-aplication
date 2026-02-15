@@ -20,7 +20,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 echo "Building frontend Docker image..."
-                sh 'docker build -t $FRONTEND_IMAGE .'
+                sh 'docker build --build-arg VITE_BACKEND_URL=http://16.16.255.56:4003 -t $FRONTEND_IMAGE .'
             }
         }
 
