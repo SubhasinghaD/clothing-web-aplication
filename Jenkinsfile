@@ -65,7 +65,7 @@ pipeline {
                     echo "Starting backend container..."
                     docker run -d \
                         --name backend \
-                        -p 4003:4001 \
+                        -p 4001:4001 \
                         -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
                         $BACKEND_IMAGE
 
