@@ -54,7 +54,7 @@ pipeline {
                 sh '''
                     echo "Deploying containers on EC2..."
 
-                    # Stop and remove existing containers if they exist
+                    # Stop and remove old containers if they exist
                     docker rm -f frontend || true
                     docker rm -f backend || true
 
@@ -65,8 +65,8 @@ pipeline {
                     echo "Starting backend container..."
                     docker run -d \
                         --name backend \
-                        -p 4003:4001 \
-                        -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
+                        -p 4001:4001 \
+                        -e MONGODB_URI="$MONGODB_URI" \
                         $BACKEND_IMAGE
 
                     echo "Starting frontend container..."
@@ -77,7 +77,7 @@ pipeline {
 
                     echo "✅ Deployment complete!"
                     
-                    echo "Running containers:"
+                    echo "Currently running containers:"
                     docker ps -a
                 '''
             }
