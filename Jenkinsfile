@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REPO = "subhasingha01/devops-engineering"
-        FRONTEND_IMAGE = "${DOCKER_REPO}:frontend-v1"
-        BACKEND_IMAGE  = "${DOCKER_REPO}:backend-v1"
+        DOCKER_REPO     = "subhasingha01/devops-engineering"
+        FRONTEND_IMAGE  = "${DOCKER_REPO}:frontend-v1"
+        BACKEND_IMAGE   = "${DOCKER_REPO}:backend-v1"
+        MONGODB_URI     = "mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net"
     }
 
     stages {
@@ -18,12 +19,14 @@ pipeline {
 
         stage('Build Frontend Image') {
             steps {
+                echo "Building frontend Docker image..."
                 sh 'docker build -t $FRONTEND_IMAGE .'
             }
         }
 
         stage('Build Backend Image') {
             steps {
+                echo "Building backend Docker image..."
                 sh 'docker build -t $BACKEND_IMAGE ./backend'
             }
         }
@@ -49,31 +52,33 @@ pipeline {
         stage('Deploy Containers on EC2') {
             steps {
                 sh '''
-                    echo "Stopping old containers..."
+                    echo "Deploying containers on EC2..."
 
-                    docker stop frontend || true
-                    docker rm frontend || true
-                    docker rm -f backend
+                    # Stop and remove existing containers if they exist
+                    docker rm -f frontend || true
+                    docker rm -f backend || true
 
                     echo "Pulling latest images..."
-
                     docker pull $FRONTEND_IMAGE
                     docker pull $BACKEND_IMAGE
 
-                    echo "Starting backend..."
-
+                    echo "Starting backend container..."
                     docker run -d \
                         --name backend \
                         -p 4003:4001 \
-                        -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
+                        -e MONGODB_URI="$MONGODB_URI" \
                         $BACKEND_IMAGE
 
-                    echo "Starting frontend..."
-
+                    echo "Starting frontend container..."
                     docker run -d \
                         --name frontend \
                         -p 80:80 \
                         $FRONTEND_IMAGE
+
+                    echo "✅ Deployment complete!"
+                    
+                    echo "Running containers:"
+                    docker ps -a
                 '''
             }
         }
@@ -81,10 +86,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Deployment Successful!"
+            echo "🎉 Pipeline succeeded! Frontend and Backend are running."
         }
         failure {
-            echo "❌ Deployment Failed!"
+            echo "❌ Pipeline failed! Check logs for errors."
         }
     }
 }
