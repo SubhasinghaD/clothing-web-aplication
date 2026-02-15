@@ -54,7 +54,7 @@ pipeline {
                 sh '''
                     echo "Deploying containers on EC2..."
 
-                    # Stop and remove existing containers if they exist
+                    # Stop and remove old containers if they exist
                     docker rm -f frontend || true
                     docker rm -f backend || true
 
@@ -77,7 +77,7 @@ pipeline {
 
                     echo "✅ Deployment complete!"
                     
-                    echo "Running containers:"
+                    echo "Currently running containers:"
                     docker ps -a
                 '''
             }
