@@ -20,14 +20,14 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 echo "Building frontend Docker image..."
-                sh 'docker build --build-arg VITE_BACKEND_URL=http://16.16.255.56:4003 -t $FRONTEND_IMAGE .'
+                sh 'docker build --no-cache --build-arg VITE_BACKEND_URL=http://16.16.255.56:4003 -t $FRONTEND_IMAGE .'
             }
         }
 
         stage('Build Backend Image') {
             steps {
                 echo "Building backend Docker image..."
-                sh 'docker build -t $BACKEND_IMAGE ./backend'
+                sh 'docker build --no-cache -t $BACKEND_IMAGE ./backend'
             }
         }
 
@@ -64,16 +64,16 @@ pipeline {
 
                     echo "Starting backend container..."
                     docker run -d \
-  --name backend \
-  -p 4003:4001 \
-    -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
-  -e JWT_SECRET="greatstack" \
-  -e ADMIN_EMAIL="admin@gaze.com" \
-  -e ADMIN_PASSWORD="qwerty123" \
-    -e CLODINARY_NAME="doxevlw5l" \
-    -e CLODINARY_API_KEY="277253128136753" \
-    -e CLODINARY_SECRET_KEY="vnoXhFSTLjVjOJIC_8CCCH1iWx4" \
-  $BACKEND_IMAGE
+                    --name backend \
+                    -p 4003:4001 \
+                    -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
+                    -e JWT_SECRET="greatstack" \
+                    -e ADMIN_EMAIL="admin@gaze.com" \
+                    -e ADMIN_PASSWORD="qwerty123" \
+                    -e CLODINARY_NAME="doxevlw5l" \
+                    -e CLODINARY_API_KEY="277253128136753" \
+                    -e CLODINARY_SECRET_KEY="vnoXhFSTLjVjOJIC_8CCCH1iWx4" \
+                         $BACKEND_IMAGE
 
                     docker run -d \
                         --name frontend \
