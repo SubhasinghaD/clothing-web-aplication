@@ -52,7 +52,7 @@ const ShopContextProvider = (props) => {
         navigate('/cart');
       } catch (error) {
         console.log(error);
-        toast.error(error.message);
+        // toast.error(error.message);
       }
     }
   };
@@ -91,7 +91,7 @@ const ShopContextProvider = (props) => {
         await axios.post(backendUrl + '/api/cart/update', { itemId, size, quantity }, { headers: { token } });
       } catch (error) {
         console.log(error);
-        toast.error(error.message);
+        // toast.error(error.message);
       }
     }
   };
@@ -120,7 +120,7 @@ const ShopContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error)
-      toast.error(error.message)
+      // toast.error(error.message)
 
     }
   }
@@ -134,7 +134,7 @@ const ShopContextProvider = (props) => {
         }
     } catch (error) {
         console.log(error);
-        toast.error(error.message);
+        // toast.error(error.message);
     }
 };
 
