@@ -66,15 +66,15 @@ pipeline {
                     docker run -d \
                         --name backend \
                         -p 4003:4001 \
-                        -e MONGODB_URI="mongodb+srv://greatstack:Devops123@cluster0.ajdto.mongodb.net" \
-                        -e JWT_SECRET="dilankasuresh06" \
+                        -e MONGODB_URI="$MONGODB_URI" \
+                        -e JWT_SECRET="greatstack" \
                         -e ADMIN_EMAIL="admin@gaze.com" \
+                        -e ADMIN_PASSWORD="qwerty123" \
                         -e CLODINARY_NAME="doxevlw5l" \
                         -e CLODINARY_API_KEY="277253128136753" \
                         -e CLODINARY_SECRET_KEY="vnoXhFSTLjVjOJIC_8CCCH1iWx4" \
                         $BACKEND_IMAGE
 
-                    echo "Starting frontend container..."
                     docker run -d \
                         --name frontend \
                         -p 80:80 \
