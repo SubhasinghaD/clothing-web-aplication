@@ -53,8 +53,7 @@ pipeline {
 
                     docker stop frontend || true
                     docker rm frontend || true
-                    docker stop backend || true
-                    docker rm backend || true
+                    docker rm -f backend
 
                     echo "Pulling latest images..."
 
@@ -66,7 +65,7 @@ pipeline {
                     docker run -d \
                         --name backend \
                         -p 4003:4001 \
-                        -e MONGO_URI="mongodb+srv://greatstack:200615Dilanka@cluster0.ajdto.mongodb.net" \
+                        -e MONGO_URI="mongodb+srv://greatstack:200615Dilanka@cluster0.ajdto.mongodb.net/test?retryWrites=true&w=majority" \
                     $BACKEND_IMAGE
 
                     echo "Starting frontend..."
