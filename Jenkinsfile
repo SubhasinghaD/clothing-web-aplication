@@ -91,10 +91,10 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Pipeline succeeded! Frontend and Backend are running."
+            echo " Pipeline succeeded! Frontend and Backend are running."
         }
         failure {
-            echo "❌ Pipeline failed! Check logs for errors."
+            echo " Pipeline failed! Check logs for errors."
         }
     }
 }
